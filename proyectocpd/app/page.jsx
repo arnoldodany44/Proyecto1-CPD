@@ -1,32 +1,14 @@
-import { getConnection } from './api/db.js';
-
-const fetchSucursales = () => {
-  const connection = getConnection();
-  return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM sucursal', (err, rows) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
+import Prestamos from './prestamos/prestamo'
+const Sucursales = () => {
+    return fetch('http://localhost:3002/api/sucursales', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
       }
-    });
-  });
-}
-const fetchPrestamos = () => {
-  const connection = getConnection();
-  return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM prestamo', (err, rows) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
-}
+    }).then(res => res.json())
+  }
 export default async function Home() {
-  const sucursales = await fetchSucursales()
-  const prestamos = await fetchPrestamos()
+  const sucursales = await Sucursales()
   return (
     <main>
       <div className="container">
@@ -116,15 +98,7 @@ export default async function Home() {
                       <th>Cantidad</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {prestamos.map(prestamo => (
-                      <tr key={prestamo.id}>
-                        <td>{prestamo.id}</td>
-                        <td>{prestamo.sucursalId}</td>
-                        <td>{prestamo.cantidad}</td>
-                      </tr>
-                    ))}
-                  </tbody>
+                  <Prestamos />
                 </table>
             </div>
           </div>
