@@ -1,6 +1,32 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
+import { getConnection } from './api/db.js';
 
-export default function Home() {
+const fetchSucursales = () => {
+  const connection = getConnection();
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT * FROM sucursal', (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+const fetchPrestamos = () => {
+  const connection = getConnection();
+  return new Promise((resolve, reject) => {
+    connection.query('SELECT * FROM prestamo', (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+}
+export default async function Home() {
+  const sucursales = await fetchSucursales()
+  const prestamos = await fetchPrestamos()
   return (
     <main>
       <div className="container">
@@ -68,13 +94,15 @@ export default function Home() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>S0001</td>
-                    <td>Downtown</td>
-                    <td>Brooklyn</td>
-                    <td>900,000</td>
-                    <td>Norte</td>
-                  </tr>
+                  {sucursales.map(sucursal => (
+                    <tr key={sucursal.id}>
+                      <td>{sucursal.id}</td>
+                      <td>{sucursal.nombre}</td>
+                      <td>{sucursal.ciudad}</td>
+                      <td>{sucursal.activos}</td>
+                      <td>{sucursal.region}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -89,11 +117,13 @@ export default function Home() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>S0001</td>
-                      <td>20,000</td>
-                    </tr>
+                    {prestamos.map(prestamo => (
+                      <tr key={prestamo.id}>
+                        <td>{prestamo.id}</td>
+                        <td>{prestamo.sucursalId}</td>
+                        <td>{prestamo.cantidad}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
             </div>
